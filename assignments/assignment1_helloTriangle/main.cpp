@@ -71,15 +71,27 @@ int main() {
 		//Drawing happens here!
 		theShader.use();
 
-		//float timeValue = glfwGetTime();
-		//float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		//int vertexColorLocation = glGetUniformLocation(theShader.ID, "colorEffect");
-		//glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		float timeValue = 2*glfwGetTime();
+		float colorValue = abs((sin(timeValue) / 2.0f) + 0.5f);
+		float positionValue = (sin(timeValue) / 2.0f);
+		float positionValue2 = (cos(timeValue)/ 2.0f);
+		int vertexColorLocation = glGetUniformLocation(theShader.ID, "colorEffect");
+		int vertexPositionLocation = glGetUniformLocation(theShader.ID, "positionEffect");
+		glUniform3f(vertexColorLocation, colorValue, colorValue, colorValue);
+		glUniform3f(vertexPositionLocation, 0, positionValue/3, positionValue);
 		
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
+		float vertices[] = {
+			// positions         // colors
+			 0.5f, -0.5f + (positionValue / 3), 0.0f,  0.0f, 1.0f, 0.0f,   // bottom right
+			-0.5f, -0.5f + (positionValue2 / 3), 0.0f,  1.0f, 0.0f, 0.0f,   // bottom left
+			 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+		};
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		glfwSwapBuffers(window);
 	}
 	printf("Shutting down...");
