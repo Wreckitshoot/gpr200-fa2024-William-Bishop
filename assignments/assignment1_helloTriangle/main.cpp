@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <iostream>
+#include "assets/Shader.h"
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
@@ -31,17 +32,10 @@ int main() {
 	}
 	//Initialization goes here!
 	
-	//vertex shader
-	const char* vertexShaderSource = "#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
-		"layout (location = 1) in vec3 aColor;\n"
-		"out vec3 ourColor;\n"
-		"void main()\n"
-		"{\n"
-		"   gl_Position = vec4(aPos,1.0);\n"
-		"	ourColor = aColor;\n"
-		"}\0";
+	Shader theShader("assets/shader.vs","assets/shader.fs");
 
+	//vertex shader
+	
 	float vertices[] = {
 		// positions         // colors
 		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
@@ -49,86 +43,19 @@ int main() {
 		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
 	};
 
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	int  success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	
-	//fragment shader
-	
-	unsigned int fragmentShader;
-
-	const GLchar* fragmentShaderSource = "#version 330 core\n"
-		"out vec4 FragColor;\n"
-		"in vec3 ourColor;\n"
-		"void main()\n"
-		"{\n"
-		"FragColor = vec4(ourColor,1.0);\n"
-		"}\0";
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	
-
-
-	
-
-	//shader program
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glUseProgram(shaderProgram);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	//linking vertex attributes
-
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//glEnableVertexAttribArray(0);
-
-	////thingy example
-	//// 0. copy our vertices array in a buffer for OpenGL to use
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	//// 1. then set the vertex attributes pointers
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//glEnableVertexAttribArray(0);
-	//// 2. use our shader program when we want to render an object
-	//glUseProgram(shaderProgram);
-	//// 3. now draw the object 
-
-	//VAO stuff
-	unsigned int VAO;
+	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
 
-	// 1. bind Vertex Array Object
 	glBindVertexArray(VAO);
-	// 2. copy our vertices array in a buffer for OpenGL to use
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	// 3. then set our vertex attributes pointers
+
+	
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
 	glEnableVertexAttribArray(1);
 
@@ -142,8 +69,7 @@ int main() {
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		//Drawing happens here!
-
-		
+		theShader.use();
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
