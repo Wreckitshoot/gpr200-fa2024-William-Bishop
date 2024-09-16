@@ -1,7 +1,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <ew/external/glad.h> // include glad to get all the required OpenGL headers
+#include "../ew/external/glad.h" // include glad to get all the required OpenGL headers
 
 #include <string>
 #include <fstream>
