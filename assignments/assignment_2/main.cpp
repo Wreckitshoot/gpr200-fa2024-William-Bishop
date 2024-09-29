@@ -116,6 +116,7 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
+	stbi_set_flip_vertically_on_load(true);
 	data = stbi_load("assets/awesomeface.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
@@ -130,7 +131,7 @@ int main() {
 	theShader.use();
 	glUniform1i(glGetUniformLocation(theShader.ID, "texture0"), 0);
 	theShader.setInt("texture1", 1);
-
+	
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -150,7 +151,6 @@ int main() {
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 		glfwSwapBuffers(window);
 	}
 	printf("Shutting down...");
